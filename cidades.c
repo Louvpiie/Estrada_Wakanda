@@ -96,7 +96,7 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
             vizinhanca = vizinhancaEsq < vizinhancaDir ? vizinhancaEsq : vizinhancaDir;
         }
 
-        if (vizinhanca < menorVizinhança) {
+        if (vizinhanca < menorVizinhanca) {
             menorVizinhanca = vizinhanca;
         }
     }
