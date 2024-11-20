@@ -5,8 +5,8 @@
 
 // Função auxiliar para comparar cidades pela posição, usada para ordenar
 int compararCidades(const void *a, const void *b) {
-    Cidade *cidadeA = (Cidade *)a;
-    Cidade *cidadeB = (Cidade *)b;
+    Cidade *cidadeA = (Cidade *) a;
+    Cidade *cidadeB = (Cidade *) b;
     return cidadeA->Posicao - cidadeB->Posicao;
 }
 
@@ -82,7 +82,7 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
     if (!estrada) return -1.0;
 
-    double menorVizinhança = estrada->T;  // Inicializa com o comprimento máximo
+    double menorVizinhanca = estrada->T;  // Inicializa com o comprimento máximo
 
     for (int i = 0; i < estrada->N; i++) {
         double vizinhanca;
@@ -97,14 +97,14 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
         }
 
         if (vizinhanca < menorVizinhança) {
-            menorVizinhança = vizinhanca;
+            menorVizinhanca = vizinhanca;
         }
     }
 
     free(estrada->C);
     free(estrada);
 
-    return menorVizinhança;
+    return menorVizinhanca;
 }
 
 // Função para encontrar o nome da cidade com a menor vizinhança
@@ -112,8 +112,8 @@ char *cidadeMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
     if (!estrada) return NULL;
 
-    char *cidadeMenorVizinhança = NULL;
-    double menorVizinhança = estrada->T;
+    char *cidadeMenorVizinhanca = NULL;
+    double menorVizinhanca = estrada->T;
 
     for (int i = 0; i < estrada->N; i++) {
         double vizinhanca;
@@ -127,16 +127,16 @@ char *cidadeMenorVizinhanca(const char *nomeArquivo) {
             vizinhanca = vizinhancaEsq < vizinhancaDir ? vizinhancaEsq : vizinhancaDir;
         }
 
-        if (vizinhanca < menorVizinhança) {
-            menorVizinhança = vizinhanca;
-            cidadeMenorVizinhança = estrada->C[i].Nome;
+        if (vizinhanca < menorVizinhanca) {
+            menorVizinhanca = vizinhanca;
+            cidadeMenorVizinhanca = estrada->C[i].Nome;
         }
     }
 
     // Aloca memória para copiar o nome da cidade com a menor vizinhança
-    char *resultado = (char *)malloc(strlen(cidadeMenorVizinhança) + 1);
+    char *resultado = (char *)malloc(strlen(cidadeMenorVizinhanca) + 1);
     if (resultado) {
-        strcpy(resultado, cidadeMenorVizinhança);
+        strcpy(resultado, cidadeMenorVizinhanca);
     }
 
     free(estrada->C);
