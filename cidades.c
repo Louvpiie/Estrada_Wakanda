@@ -18,62 +18,67 @@ Estrada *getEstrada(const char *nomeArquivo) {
         return NULL;
     }
 
-    Estrada *estrada = (Estrada *)malloc(sizeof(Estrada));
+    // Aloca memoria para a estrutura Estrada
+    Estrada *estrada = malloc(sizeof(Estrada));
     if (!estrada) {
-        fprintf(stderr, "Erro: Falha ao alocar memória para estrada.\n");
+        fprintf(stderr, "Erro: Falha ao alocar memória para a estrutura Estrada.\n");
         fclose(arquivo);
         return NULL;
     }
 
-    // Leitura do comprimento da estrada
-    if (fscanf(arquivo, "%d", &estrada->T) != 1 || estrada->T < 3 || estrada->T > 1000000) {
-        fprintf(stderr, "Erro: Comprimento da estrada (T) inválido ou fora do intervalo.\n");
-        fclose(arquivo);
+    // Le o comprimento da estrada (T) e o número de cidades (N)
+    if (fscanf(arquivo, "%d %d", &(estrada->T), &(estrada->N)) != 2) {
+        fprintf(stderr, "Erro: Arquivo mal formatado.\n");
         free(estrada);
-        return NULL;
-    }
-
-    // Leitura do número de cidades
-    if (fscanf(arquivo, "%d", &estrada->N) != 1 || estrada->N < 2 || estrada->N > 10000) {
-        fprintf(stderr, "Erro: Número de cidades (N) inválido ou fora do intervalo.\n");
         fclose(arquivo);
-        free(estrada);
         return NULL;
     }
 
-    // Alocação do vetor de cidades
-    estrada->C = (Cidade *)malloc(estrada->N * sizeof(Cidade));
+    // Valida os valores de T
+    if (estrada->T < 3 || estrada->T > 1000000) {
+        free(estrada);
+        fclose(arquivo);
+        return NULL;
+    }
+
+    // Valida os valores de N
+    if (estrada->N < 2 || estrada->N > 10000) {
+        free(estrada);
+        fclose(arquivo);
+        return NULL;
+    }
+
+    // Aloca memoria para o vetor de cidades
+    estrada->C = malloc(estrada->N * sizeof(Cidade));
     if (!estrada->C) {
-        fprintf(stderr, "Erro: Falha ao alocar memória para o vetor de cidades.\n");
-        fclose(arquivo);
+        fprintf(stderr, "Erro: Falha ao alocar memória para as cidades.\n");
         free(estrada);
+        fclose(arquivo);
         return NULL;
     }
 
-    // Leitura das cidades e validação das posições
+    // Le os dados das cidades
     for (int i = 0; i < estrada->N; i++) {
-        if (fscanf(arquivo, "%d %255s", &estrada->C[i].Posicao, estrada->C[i].Nome) != 2) {
-            fprintf(stderr, "Erro: Falha na leitura da cidade %d.\n", i + 1);
-            fclose(arquivo);
+        // Verifica se consegue ler os dados corretamente
+        if (fscanf(arquivo, "%d ", &(estrada->C[i].Posicao)) != 1 ||
+            !fgets(estrada->C[i].Nome, sizeof(estrada->C[i].Nome), arquivo)) {
+            fprintf(stderr, "Erro: Falha ao ler os dados da cidade %d.\n", i + 1);
             free(estrada->C);
             free(estrada);
+            fclose(arquivo);
             return NULL;
         }
-        // Verificar restrições das posições (Xi ≠ Xj):
-        for (int j = 0; j < i; j++) {
-            if (estrada->C[i].Posicao == estrada->C[j].Posicao) {
-                fprintf(stderr, "Erro: Duas cidades possuem a mesma posição (%d).\n", estrada->C[i].Posicao);
-                fclose(arquivo);
-                free(estrada->C);
-                free(estrada);
-                return NULL;
-            }
-        }
+
+        // Remove o caractere de nova linha ('\n') do nome, se presente
+        char *newline = strchr(estrada->C[i].Nome, '\n');
+        if (newline) *newline = '\0';
     }
+
     fclose(arquivo);
 
-    // Ordenar cidades pela posição
+    // Ordena o vetor de cidades pela posição
     qsort(estrada->C, estrada->N, sizeof(Cidade), compararCidades);
+
     return estrada;
 }
 
@@ -82,7 +87,7 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
     if (!estrada) return -1.0;
 
-    double menorVizinhanca = estrada->T;  // Inicializa com o comprimento máximo
+    double menorVizinhanca = estrada->T; // Inicializa com o comprimento máximo
 
     for (int i = 0; i < estrada->N; i++) {
         double vizinhanca;
